@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TradeSim - Trading Simulator</title>
+    <a href="/" class="home-link">← Back to Home</a>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+    <style>
+        /* --- Base Styles & Theme --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: radial-gradient(circle at 20% 20%, #0f172a, #0b1120);
+            color: #CBD5E1;
+            font-size: 0.9rem;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* --- Main Layout --- */
+        .simulator-container {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            padding: 15px;
+            gap: 15px;
+        }
+
+        .left-panel {
+            flex: 0 0 280px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            overflow-y: auto;
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        /* --- Panel & Card Styling --- */
+        .panel {
+            background: linear-gradient(145deg, #1e293b, #0f172a);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .panel-header {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            background: linear-gradient(90deg, #60a5fa, #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* --- Watchlist --- */
+        .watchlist-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 5px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        .watchlist-item:hover {
+            background-color: rgba(96, 165, 250, 0.1);
+            transform: translateX(3px);
+        }
+
+        .watchlist-item.active {
+            background-color: rgba(96, 165, 250, 0.2);
+            box-shadow: 0 0 10px rgba(96, 165, 250, 0.2);
+        }
+
+        .stock-symbol { font-weight: 600; color: #93c5fd; }
+        .stock-price { font-weight: 500; }
+        .price-up { color: #4ade80; }
+        .price-down { color: #f87171; }
+
+        /* --- Trading Chart --- */
+        .chart-container {
+            flex: 1;
+            height: 70%; /* Adjust as needed */
+            border-radius: 12px;
+            overflow: hidden;
+            background-color: #1e293b;
+        }
+
+        /* --- Portfolio & Trade Controls --- */
+        .bottom-panels {
+            display: flex;
+            gap: 15px;
+            height: 30%;
+        }
+
+        .portfolio-panel { flex: 2; }
+        .trade-panel { flex: 1; }
+        
+        .portfolio-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            text-align: center;
+        }
+        
+        .portfolio-metric h4 {
+            font-size: 0.85rem;
+            color: #94a3b8;
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+
+        .portfolio-metric p {
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+        
+        #holdings-list {
+            margin-top: 15px;
+            font-size: 0.85rem;
+            max-height: 100px;
+            overflow-y: auto;
+        }
+
+        /* --- Trade Controls --- */
+        .trade-controls { display: flex; flex-direction: column; gap: 15px; }
+        .trade-input {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            background-color: #273449;
+            color: #CBD5E1;
+            font-size: 0.9rem;
+        }
+        
+        .trade-buttons { display: flex; gap: 10px; }
+        .btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-buy { background-color: #22c55e; color: white; }
+        .btn-buy:hover { background-color: #16a34a; box-shadow: 0 0 12px rgba(34, 197, 94, 0.4); }
+        .btn-sell { background-color: #ef4444; color: white; }
+        .btn-sell:hover { background-color: #dc2626; box-shadow: 0 0 12px rgba(239, 68, 68, 0.4); }
+
+        /* --- Responsive Design --- */
+        @media (max-width: 1200px) {
+            .left-panel { flex: 0 0 220px; }
+        }
+
+        @media (max-width: 992px) {
+            .simulator-container { flex-direction: column; }
+            .left-panel { flex-direction: row; flex: 0 0 auto; overflow-x: auto; }
+            .panel { padding: 15px; }
+            .bottom-panels { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="simulator-container">
+        <!-- Left Panel: Watchlist -->
+        <div class="left-panel">
+            <div class="panel" style="flex: 1;">
+                <h3 class="panel-header">Watchlist</h3>
+                <div id="watchlist"></div>
+            </div>
+        </div>
+
+        <!-- Main Content: Chart and Controls -->
+        <div class="main-content">
+            <div class="chart-container" id="tradingview-chart"></div>
+            
+            <div class="bottom-panels">
+                <!-- Portfolio Panel -->
+                <div class="panel portfolio-panel">
+                    <h3 class="panel-header">Portfolio Summary</h3>
+                    <div class="portfolio-grid">
+                        <div class="portfolio-metric">
+                            <h4>Available Cash</h4>
+                            <p id="cash-balance">$100,000.00</p>
+                        </div>
+                        <div class="portfolio-metric">
+                            <h4>Holdings Value</h4>
+                            <p id="holdings-value">$0.00</p>
+                        </div>
+                        <div class="portfolio-metric">
+                            <h4>Total Equity</h4>
+                            <p id="total-equity">$100,000.00</p>
+                        </div>
+                    </div>
+                     <div id="holdings-list">Your holdings will appear here.</div>
+                </div>
+
+                <!-- Trade Panel -->
+                <div class="panel trade-panel">
+                    <h3 class="panel-header">Trade <span id="current-symbol-trade">AAPL</span></h3>
+                    <div class="trade-controls">
+                        <input type="number" id="quantity-input" class="trade-input" placeholder="Quantity" min="1">
+                        <div class="trade-buttons">
+                            <button id="buy-btn" class="btn btn-buy">Buy</button>
+                            <button id="sell-btn" class="btn btn-sell">Sell</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TradingView Widget Script -->
+    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+    <script type="text/javascript">
+        // --- STATE MANAGEMENT ---
+        let currentSymbol = 'AAPL';
+        let cash = 100000;
+        let portfolio = {}; // e.g., { 'AAPL': { quantity: 10, avgPrice: 150.00 } }
+        let currentPrices = {};
+        const watchlistSymbols = ['AAPL', 'GOOGL', 'MSFT', 'AMZN', 'TSLA', 'NVDA'];
+        let tradingViewWidget;
+
+        // --- UI ELEMENTS ---
+        const watchlistEl = document.getElementById('watchlist');
+        const cashBalanceEl = document.getElementById('cash-balance');
+        const holdingsValueEl = document.getElementById('holdings-value');
+        const totalEquityEl = document.getElementById('total-equity');
+        const holdingsListEl = document.getElementById('holdings-list');
+        const currentSymbolTradeEl = document.getElementById('current-symbol-trade');
+        const quantityInput = document.getElementById('quantity-input');
+        const buyBtn = document.getElementById('buy-btn');
+        const sellBtn = document.getElementById('sell-btn');
+
+        // --- INITIALIZATION ---
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeWatchlist();
+            initializeChart(currentSymbol);
+            updatePortfolioDisplay();
+
+            buyBtn.addEventListener('click', handleBuy);
+            sellBtn.addEventListener('click', handleSell);
+        });
+
+        // --- CHART & WATCHLIST ---
+        function initializeChart(symbol) {
+            if (tradingViewWidget) {
+                tradingViewWidget.remove();
+            }
+            tradingViewWidget = new TradingView.widget({
+                "container_id": "tradingview-chart",
+                "autosize": true,
+                "symbol": `NASDAQ:${symbol}`,
+                "interval": "D",
+                "timezone": "Etc/UTC",
+                "theme": "dark",
+                "style": "1",
+                "locale": "en",
+                "toolbar_bg": "#f1f3f6",
+                "enable_publishing": false,
+                "hide_side_toolbar": false,
+                "studies": ["MACD@tv-basicstudies", "RSI@tv-basicstudies"]
+            });
+            currentSymbol = symbol;
+            currentSymbolTradeEl.textContent = symbol;
+            updateActiveWatchlistItem();
+        }
+
+        function initializeWatchlist() {
+            watchlistSymbols.forEach(symbol => {
+                const price = 100 + Math.random() * 400; // Simulated initial price
+                currentPrices[symbol] = price;
+                
+                const item = document.createElement('div');
+                item.className = 'watchlist-item';
+                item.dataset.symbol = symbol;
+                item.innerHTML = `
+                    <span class="stock-symbol">${symbol}</span>
+                    <span class="stock-price" id="price-${symbol}">${price.toFixed(2)}</span>
+                `;
+                item.addEventListener('click', () => initializeChart(symbol));
+                watchlistEl.appendChild(item);
+            });
+            updateActiveWatchlistItem();
+            
+            // Simulate price updates
+            setInterval(simulatePriceUpdates, 2000);
+        }
+        
+        function updateActiveWatchlistItem() {
+            document.querySelectorAll('.watchlist-item').forEach(item => {
+                item.classList.toggle('active', item.dataset.symbol === currentSymbol);
+            });
+        }
+
+        function simulatePriceUpdates() {
+            watchlistSymbols.forEach(symbol => {
+                const change = (Math.random() - 0.5) * 2; // -1 to +1
+                const oldPrice = currentPrices[symbol];
+                const newPrice = Math.max(1, oldPrice + change); // Ensure price > 0
+                currentPrices[symbol] = newPrice;
+                
+                const priceEl = document.getElementById(`price-${symbol}`);
+                if (priceEl) {
+                    priceEl.textContent = newPrice.toFixed(2);
+                    priceEl.classList.remove('price-up', 'price-down');
+                    if (newPrice > oldPrice) {
+                        priceEl.classList.add('price-up');
+                    } else {
+                        priceEl.classList.add('price-down');
+                    }
+                }
+            });
+            updatePortfolioDisplay(); // Update holdings value with new prices
+        }
+
+        // --- TRADING LOGIC ---
+        function handleBuy() {
+            const quantity = parseInt(quantityInput.value);
+            if (isNaN(quantity) || quantity <= 0) {
+                alert("Please enter a valid quantity.");
+                return;
+            }
+            
+            const price = currentPrices[currentSymbol];
+            const cost = quantity * price;
+
+            if (cash < cost) {
+                alert("Not enough cash to complete this purchase.");
+                return;
+            }
+
+            cash -= cost;
+            
+            if (portfolio[currentSymbol]) {
+                const existingHolding = portfolio[currentSymbol];
+                const totalCost = (existingHolding.avgPrice * existingHolding.quantity) + cost;
+                const totalQuantity = existingHolding.quantity + quantity;
+                existingHolding.quantity = totalQuantity;
+                existingHolding.avgPrice = totalCost / totalQuantity;
+            } else {
+                portfolio[currentSymbol] = {
+                    quantity: quantity,
+                    avgPrice: price
+                };
+            }
+
+            quantityInput.value = '';
+            updatePortfolioDisplay();
+        }
+
+        function handleSell() {
+            const quantity = parseInt(quantityInput.value);
+            if (isNaN(quantity) || quantity <= 0) {
+                alert("Please enter a valid quantity.");
+                return;
+            }
+            
+            if (!portfolio[currentSymbol] || portfolio[currentSymbol].quantity < quantity) {
+                alert("You do not own enough shares to sell.");
+                return;
+            }
+
+            const price = currentPrices[currentSymbol];
+            const proceeds = quantity * price;
+            cash += proceeds;
+            
+            portfolio[currentSymbol].quantity -= quantity;
+            if (portfolio[currentSymbol].quantity === 0) {
+                delete portfolio[currentSymbol];
+            }
+
+            quantityInput.value = '';
+            updatePortfolioDisplay();
+        }
+
+        // --- PORTFOLIO UI UPDATE ---
+        function updatePortfolioDisplay() {
+            let totalHoldingsValue = 0;
+            let holdingsHTML = '';
+
+            for (const symbol in portfolio) {
+                const holding = portfolio[symbol];
+                const currentValue = holding.quantity * currentPrices[symbol];
+                totalHoldingsValue += currentValue;
+                
+                holdingsHTML += `<div>${symbol}: ${holding.quantity} shares @ avg $${holding.avgPrice.toFixed(2)}</div>`;
+            }
+            
+            if (holdingsHTML === '') {
+                holdingsListEl.innerHTML = 'Your holdings will appear here.';
+            } else {
+                holdingsListEl.innerHTML = holdingsHTML;
+            }
+
+            cashBalanceEl.textContent = `$${cash.toFixed(2)}`;
+            holdingsValueEl.textContent = `$${totalHoldingsValue.toFixed(2)}`;
+            totalEquityEl.textContent = `$${(cash + totalHoldingsValue).toFixed(2)}`;
+        }
+    </script>
+</body>
+</html>
+

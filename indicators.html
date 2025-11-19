@@ -1,0 +1,990 @@
+Gmail	OUM KIRAN <oumkiran@gmail.com>
+(no subject)
+Shivadev Ranjul <shivadevranjul23@outlook.com>	Sat, Oct 25, 2025 at 8:28 AM
+To: "oumkiran@gmail.com" <oumkiran@gmail.com>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>StockUp - Indicators</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: radial-gradient(circle at 20% 20%, #0f172a, #0b1120);
+      color: #CBD5E1;
+      font-size: 0.9rem;
+    }
+
+    header {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      background: rgba(15, 23, 42, 0.8);
+      backdrop-filter: blur(12px);
+      padding: 10px 10%;
+      height: 60px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      z-index: 1000;
+    }
+
+    header h1 {
+      font-size: 1.2rem;
+      color: #93c5fd;
+      margin-right: 20px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    nav a {
+      text-decoration: none;
+      color: #bcd1ff;
+      font-weight: 500;
+      font-size: 0.9rem;
+      transition: color 0.3s, text-shadow 0.3s;
+    }
+
+    nav a:hover {
+      color: #60a5fa;
+      text-shadow: 0 0 8px rgba(96, 165, 250, 0.6);
+    }
+
+    .header-search {
+      position: relative;
+      display: flex;
+      align-items: center;
+      margin-left: 15px;
+    }
+
+    .header-search input {
+      padding: 6px 30px 6px 12px;
+      border: none;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      background-color: #1E293B;
+      color: #CBD5E1;
+      width: 150px;
+      transition: width 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+    }
+
+    .header-search input:focus {
+      width: 220px;
+      outline: none;
+      background-color: #273449;
+      box-shadow: 0 0 10px rgba(96, 165, 250, 0.4);
+    }
+
+    .header-search::after {
+      content: "🔍";
+      position: absolute;
+      right: 10px;
+      font-size: 0.9rem;
+      color: #94a3b8;
+      pointer-events: none;
+    }
+
+    section { padding: 70px 10% 60px; }
+
+    h2 {
+      font-size: 1.5rem;
+      margin-bottom: 15px;
+      background: linear-gradient(90deg, #60a5fa, #818cf8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: 600;
+    }
+
+    /* Category Tabs */
+    .category-tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+    }
+
+    .tab {
+      padding: 10px 20px;
+      background: linear-gradient(145deg, #1E293B, #0f172a);
+      border-radius: 20px;
+      border: 1px solid rgba(96, 165, 250, 0.2);
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 500;
+      transition: all 0.3s;
+    }
+
+    .tab:hover, .tab.active {
+      background: linear-gradient(135deg, #60a5fa, #818cf8);
+      color: white;
+      border-color: transparent;
+      transform: translateY(-2px);
+    }
+
+    .indicators-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 25px;
+      margin-bottom: 40px;
+    }
+
+    .card {
+      background: linear-gradient(145deg, #1E293B, #0f172a);
+      border-radius: 15px;
+      padding: 20px;
+      font-size: 0.85rem;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      color: #CBD5E1;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      border: 1px solid rgba(96, 165, 250, 0.1);
+    }
+
+    .card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 12px 28px rgba(96, 165, 250, 0.3);
+      border-color: rgba(96, 165, 250, 0.3);
+    }
+
+    .card h3 {
+      margin-bottom: 8px;
+      color: #60a5fa;
+      font-size: 1.1rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card-badge {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      background: rgba(96, 165, 250, 0.2);
+      color: #60a5fa;
+    }
+
+    .card-description {
+      color: #94a3b8;
+      line-height: 1.5;
+      margin-bottom: 12px;
+    }
+
+    .card-details {
+      background: rgba(30, 41, 59, 0.5);
+      padding: 12px;
+      border-radius: 8px;
+      margin-top: 12px;
+      font-size: 0.8rem;
+    }
+
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 6px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .detail-row:last-child {
+      margin-bottom: 0;
+      padding-bottom: 0;
+      border-bottom: none;
+    }
+
+    .detail-label {
+      color: #94a3b8;
+      font-weight: 500;
+    }
+
+    .detail-value {
+      color: #60a5fa;
+      font-weight: 600;
+    }
+
+    .chart-container {
+      display: none;
+      margin-top: 15px;
+      height: 250px;
+      border-radius: 10px;
+      overflow: hidden;
+      background: #0f172a;
+      border: 1px solid rgba(96, 165, 250, 0.2);
+    }
+
+    /* Interactive Calculator */
+    .calculator-section {
+      background: linear-gradient(145deg, #1E293B, #0f172a);
+      border-radius: 15px;
+      padding: 25px;
+      margin: 40px 0;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(96, 165, 250, 0.1);
+    }
+
+    .calc-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+    }
+
+    .calc-input-group {
+      margin-bottom: 15px;
+    }
+
+    .calc-input-group label {
+      display: block;
+      margin-bottom: 5px;
+      color: #93c5fd;
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+
+    .calc-input-group input, .calc-input-group select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid rgba(96, 165, 250, 0.3);
+      border-radius: 8px;
+      background: #0f172a;
+      color: #CBD5E1;
+      font-size: 0.9rem;
+      transition: border-color 0.3s;
+    }
+
+    .calc-input-group input:focus, .calc-input-group select:focus {
+      outline: none;
+      border-color: #60a5fa;
+    }
+
+    .calc-result {
+      background: rgba(96, 165, 250, 0.1);
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 15px;
+      border: 1px solid rgba(96, 165, 250, 0.3);
+    }
+
+    .calc-result-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #60a5fa;
+      margin-top: 5px;
+    }
+
+    .calc-btn {
+      padding: 12px 24px;
+      background: linear-gradient(135deg, #60a5fa, #818cf8);
+      border: none;
+      border-radius: 8px;
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      margin-top: 15px;
+    }
+
+    .calc-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(96, 165, 250, 0.4);
+    }
+
+    /* Comparison Table */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 30px 0;
+      background: linear-gradient(145deg, #1E293B, #0f172a);
+      border-radius: 12px;
+      overflow: hidden;
+      font-size: 0.85rem;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    table th, table td {
+      padding: 14px 16px;
+      text-align: left;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    table th {
+      background: rgba(39, 52, 73, 0.8);
+      color: #93c5fd;
+      font-weight: 600;
+    }
+   
+    table tr:hover {
+      background: rgba(96, 165, 250, 0.05);
+    }
+
+    /* Signal Strength Indicator */
+    .signal-strength {
+      display: flex;
+      gap: 4px;
+      align-items: center;
+    }
+
+    .signal-bar {
+      width: 6px;
+      height: 20px;
+      background: rgba(96, 165, 250, 0.2);
+      border-radius: 3px;
+    }
+
+    .signal-bar.active {
+      background: linear-gradient(180deg, #60a5fa, #818cf8);
+    }
+
+    /* Educational Tips */
+    .tips-container {
+      background: linear-gradient(145deg, #1E293B, #0f172a);
+      border-radius: 15px;
+      padding: 25px;
+      margin: 40px 0;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+      border-left: 4px solid #60a5fa;
+    }
+
+    .tip-item {
+      padding: 15px;
+      background: rgba(30, 41, 59, 0.5);
+      border-radius: 8px;
+      margin-bottom: 15px;
+    }
+
+    .tip-item h4 {
+      color: #60a5fa;
+      margin-bottom: 8px;
+      font-size: 0.95rem;
+    }
+
+    .tip-item p {
+      color: #94a3b8;
+      line-height: 1.6;
+      font-size: 0.85rem;
+    }
+
+    .footer {
+      background-color: rgba(15, 23, 42, 0.9);
+      text-align: center;
+      padding: 18px;
+      font-size: 0.8rem;
+      color: #b2c1f4;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    @media (max-width: 768px) {
+      .calc-grid { grid-template-columns: 1fr; }
+      header { flex-direction: column; align-items: flex-start; height: auto; padding: 10px; }
+      nav { margin-top: 8px; }
+      nav a { margin: 8px 8px 0 0; font-size: 0.85rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>StockUp</h1>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="indicators.html">Indicators</a>
+      <a href="analysis.html">Analysis</a>
+      <div class="header-search">
+        <input type="text" id="search-symbol" placeholder="Search...">
+      </div>
+    </nav>
+  </header>
+
+  <section>
+    <h2>Technical Indicators Hub</h2>
+    <p style="font-size: 0.85rem; line-height: 1.5; margin-bottom: 20px;">
+      Explore powerful stock market indicators for trend analysis, volatility tracking, and momentum detection. Click on any indicator to view a live chart and detailed information.
+    </p>
+
+    <!-- Category Filter Tabs -->
+    <div class="category-tabs">
+      <div class="tab active" onclick="filterCategory('all')">All Indicators</div>
+      <div class="tab" onclick="filterCategory('trend')">Trend</div>
+      <div class="tab" onclick="filterCategory('momentum')">Momentum</div>
+      <div class="tab" onclick="filterCategory('volatility')">Volatility</div>
+      <div class="tab" onclick="filterCategory('volume')">Volume</div>
+    </div>
+
+    <div class="indicators-grid" id="indicators-grid">
+      <!-- Trend Indicators -->
+      <div class="card" data-category="trend" onclick="toggleChart(this, 'MACD')">
+        <h3>MACD <span class="card-badge">Trend</span></h3>
+        <p class="card-description">Moving Average Convergence Divergence spots trend reversals using moving average crossovers.</p>
+        <div class="card-details">
+          <div class="detail-row">
+            <span class="detail-label">Best For:</span>
+            <span class="detail-value">Trend Reversal</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Time Frame:</span>
+            <span class="detail-value">Medium-term</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Signal Strength:</span>
+            <div class="signal-strength">
+              <div class="signal-bar active"></div>
+              <div class="signal-bar active"></div>
+              <div class="signal-bar active"></div>
+              <div class="signal-bar active"></div>
+              <div class="signal-bar"></div>
+            </div>
+          </div>
+        </div>
+        <div class="chart-container" id="chart-MACD"></div>
+      </div>
+
+      <div class="card" data-category="trend" onclick="toggleChart(this, 'EMA')">
+        <h3>EMA <span class="card-badge">Trend</span></h3>
+        <p class="card-description">Exponential Moving Average gives more weight to recent prices for faster trend detection.</p>
+        <div class="card-details">
+          <div class="detail-row">
+            <span class="detail-label">Best For:</span>
+            <span class="detail-value">Trend Following</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Time Frame:</span>
+            <span class="detail-value">All timeframes</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Signal Strength:</span>
+            <div class="signal-strength">
+              <div class="signal-bar active"></div>
+              <div class="signal-bar active"></div>
+              <div class="signal-bar active"></div>
+              <div class="signal-bar active"></div>
+              <div class="signal-bar active"></div>
+            </div>
+          </div>
+        </div>
+        <div class="chart-container" id="chart-EMA"></div>
+      </div>
+
+      <!-- Momentum Indicators -->
+      <div class="card" data-category="momentum" onclick="toggleChart(this, 'RSI')">
+        <h3>RSI <span class="card-badge">Momentum</span></h3>
+        <p class="card-description">Relative Strength Index identifies overbought/oversold zones to time market entries.</p>
+        <div class="card-details">
+          <div class="detail-row">
+            <span class="detail-label">Best For:</span>
+            <span class="detail-value">Entry/Exit Timing</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Time Frame:</span>
+            <span class="detail-value">Short-term</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Signal Strength:</span>
+            <div class="signal-strength">
+              <div class="signal-bar active"></div>
+              <div class="signal-bar active"></div>
+              <div class="signal-bar active"></div>
+              <div class="signal-bar active"></div>
+              <div class="signal-bar active"></div>
+            </div>
+          </div>
+        </div>
+        <div class="chart-container" id="chart-RSI"></div>
+      </div>
+
+      <div class="card" data-category="momentum" onclick="toggleChart(this, 'Stochastic')">
+        <h3>Stochastic Oscillator <span class="card-badge">Momentum</span></h3>
+        <p class="card-description">Compares closing price to price range over time to identify momentum shifts.</p>
+        <div class="card-details">
+          <div class="detail-row">
+            <span class="detail-label">Best For:</span>
+            <span class="detail-value">Momentum Changes</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Time Frame:</span>
+            <span class="detail-value">Short-term</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Signal Strength:</span>
+            <div class="signal-strength">
+              <div class="signal-bar active"></div>
+              <div class="signal-bar active"></div>
+              <div class="signal-bar active"></div>
+              <div class="signal-bar active"></div>
+              <div class="signal-bar"></div>
+            </div>
+          </div>
+        </div>
+        <div class="chart-container" id="chart-Stochastic"></div>
+      </div>
+
+      <!-- Volatility Indicators -->
+      <div class="card" data-category="volatility" onclick="toggleChart(this, 'Bollinger')">
+        <h3>Bollinger Bands <span class="card-badge">Volatility</span></h3>
+        <p class="card-description">Measures market volatility with upper and lower bands around moving average.</p>
+        <div class="card-details">
+          <div class="detail-row">
+            <span class="detail-label">Best For:</span>
+            <span class="detail-value">Volatility Breakouts</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Time Frame:</span>
+            <span class="detail-value">Medium-term</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Signal Strength:</span>
+            <div class="signal-strength">
+              <div class="signal-bar active"></div>
+              <div class="signal-bar active"></div>
+              <div class="signal-bar active"></div>
+              <div class="signal-bar active"></div>
+              <div class="signal-bar"></div>
+            </div>
+          </div>
+        </div>
+        <div class="chart-container" id="chart-Bollinger"></div>
+      </div>
+
+      <div class="card" data-category="volatility" onclick="toggleChart(this, 'ATR')">
+        <h3>ATR <span class="card-badge">Volatility</span></h3>
+        <p class="card-description">Average True Range measures market volatility by calculating price range movement.</p>
+        <div class="card-details">
+          <div class="detail-row">
+            <span class="detail-label">Best For:</span>
+            <span class="detail-value">Risk Management</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Time Frame:</span>
+            <span class="detail-value">All timeframes</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Signal Strength:</span>
+            <div class="signal-strength">
+              <div class="signal-bar active"></div>
+              <div class="signal-bar active"></div>
+              <div class="signal-bar active"></div>
+              <div class="signal-bar"></div>
+              <div class="signal-bar"></div>
+            </div>
+          </div>
+        </div>
+        <div class="chart-container" id="chart-ATR"></div>
+      </div>
+
+      <!-- Volume Indicators -->
+      <div class="card" data-category="volume" onclick="toggleChart(this, 'VWAP')">
+        <h3>VWAP <span class="card-badge">Volume</span></h3>
+        <p class="card-description">Volume Weighted Average Price shows average price based on volume-weighted data.</p>
+        <div class="card-details">
+          <div class="detail-row">
+            <span class="detail-label">Best For:</span>
+            <span class="detail-value">Intraday Trading</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Time Frame:</span>
+            <span class="detail-value">Intraday</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Signal Strength:</span>
+            <div class="signal-strength">
+              <div class="signal-bar active"></div>
+              <div class="signal-bar active"></div>
+              <div class="signal-bar active"></div>
+              <div class="signal-bar active"></div>
+              <div class="signal-bar active"></div>
+            </div>
+          </div>
+        </div>
+        <div class="chart-container" id="chart-VWAP"></div>
+      </div>
+
+      <div class="card" data-category="volume" onclick="toggleChart(this, 'OBV')">
+        <h3>OBV <span class="card-badge">Volume</span></h3>
+        <p class="card-description">On-Balance Volume uses volume flow to predict price changes.</p>
+        <div class="card-details">
+          <div class="detail-row">
+            <span class="detail-label">Best For:</span>
+            <span class="detail-value">Trend Confirmation</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Time Frame:</span>
+            <span class="detail-value">Medium-term</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Signal Strength:</span>
+            <div class="signal-strength">
+              <div class="signal-bar active"></div>
+              <div class="signal-bar active"></div>
+              <div class="signal-bar active"></div>
+              <div class="signal-bar active"></div>
+              <div class="signal-bar"></div>
+            </div>
+          </div>
+        </div>
+        <div class="chart-container" id="chart-OBV"></div>
+      </div>
+
+      <!-- Additional Indicators -->
+      <div class="card" data-category="trend" onclick="toggleChart(this, 'Ichimoku')">
+        <h3>Ichimoku Cloud <span class="card-badge">Trend</span></h3>
+        <p class="card-description">Comprehensive indicator showing support, resistance, and trend strength in one view.</p>
+        <div class="card-details">
+          <div class="detail-row">
+            <span class="detail-label">Best For:</span>
+            <span class="detail-value">Trend Analysis</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Time Frame:</span>
+            <span class="detail-value">Medium-Long term</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Signal Strength:</span>
+            <div class="signal-strength">
+              <div class="signal-bar active"></div>
+              <div class="signal-bar active"></div>
+              <div class="signal-bar active"></div>
+              <div class="signal-bar active"></div>
+              <div class="signal-bar"></div>
+            </div>
+          </div>
+        </div>
+        <div class="chart-container" id="chart-Ichimoku"></div>
+      </div>
+
+      <div class="card" data-category="momentum" onclick="toggleChart(this, 'CCI')">
+        <h3>CCI <span class="card-badge">Momentum</span></h3>
+        <p class="card-description">Commodity Channel Index identifies cyclical trends in price movements.</p>
+        <div class="card-details">
+          <div class="detail-row">
+            <span class="detail-label">Best For:</span>
+            <span class="detail-value">Cycle Analysis</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Time Frame:</span>
+            <span class="detail-value">Short-Medium term</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Signal Strength:</span>
+            <div class="signal-strength">
+              <div class="signal-bar active"></div>
+              <div class="signal-bar active"></div>
+              <div class="signal-bar active"></div>
+              <div class="signal-bar"></div>
+              <div class="signal-bar"></div>
+            </div>
+          </div>
+        </div>
+        <div class="chart-container" id="chart-CCI"></div>
+      </div>
+    </div>
+
+    <!-- Interactive RSI Calculator -->
+    <h2 style="margin-top: 50px;">RSI Calculator</h2>
+    <div class="calculator-section">
+      <p style="font-size: 0.85rem; color: #94a3b8; margin-bottom: 15px;">
+        Calculate the Relative Strength Index based on average gains and losses over a period.
+      </p>
+      <div class="calc-grid">
+        <div>
+          <div class="calc-input-group">
+            <label>Average Gain</label>
+            <input type="number" id="avg-gain" placeholder="Enter average gain" value="5">
+          </div>
+          <div class="calc-input-group">
+            <label>Average Loss</label>
+            <input type="number" id="avg-loss" placeholder="Enter average loss" value="3">
+          </div>
+          <button class="calc-btn" onclick="calculateRSI()">Calculate RSI</button>
+        </div>
+        <div>
+          <div class="calc-result">
+            <div style="color: #94a3b8; font-size: 0.85rem;">RSI Value</div>
+            <div class="calc-result-value" id="rsi-result">--</div>
+            <div style="color: #94a3b8; font-size: 0.75rem; margin-top: 10px;" id="rsi-interpretation"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Moving Average Calculator -->
+    <h2 style="margin-top: 50px;">Moving Average Calculator</h2>
+    <div class="calculator-section">
+      <p style="font-size: 0.85rem; color: #94a3b8; margin-bottom: 15px;">
+        Calculate Simple Moving Average (SMA) or Exponential Moving Average (EMA).
+      </p>
+      <div class="calc-grid">
+        <div>
+          <div class="calc-input-group">
+            <label>Price Data (comma-separated)</label>
+            <input type="text" id="price-data" placeholder="e.g., 100,102,105,103,107" value="100,102,105,103,107,110">
+          </div>
+          <div class="calc-input-group">
+            <label>Period</label>
+            <input type="number" id="ma-period" placeholder="Enter period" value="5">
+          </div>
+          <div class="calc-input-group">
+            <label>Type</label>
+            <select id="ma-type">
+              <option value="SMA">Simple Moving Average (SMA)</option>
+              <option value="EMA">Exponential Moving Average (EMA)</option>
+            </select>
+          </div>
+          <button class="calc-btn" onclick="calculateMA()">Calculate MA</button>
+        </div>
+        <div>
+          <div class="calc-result">
+            <div style="color: #94a3b8; font-size: 0.85rem;">Moving Average</div>
+            <div class="calc-result-value" id="ma-result">--</div>
+            <div style="color: #94a3b8; font-size: 0.75rem; margin-top: 10px;" id="ma-details"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Comparison Table -->
+    <h2 style="margin-top: 50px;">Indicator Comparison</h2>
+    <table>
+      <tr>
+        <th>Indicator</th>
+        <th>Category</th>
+        <th>Type</th>
+        <th>Best Time Frame</th>
+        <th>Use Case</th>
+      </tr>
+      <tr>
+        <td><strong>MACD</strong></td>
+        <td>Momentum</td>
+        <td>Trend</td>
+        <td>Medium-term</td>
+        <td>Reversal signals</td>
+      </tr>
+      <tr>
+        <td><strong>RSI</strong></td>
+        <td>Momentum</td>
+        <td>Oscillator</td>
+        <td>Short-term</td>
+        <td>Overbought/oversold</td>
+      </tr>
+      <tr>
+        <td><strong>Bollinger Bands</strong></td>
+        <td>Volatility</td>
+        <td>Envelope</td>
+        <td>Medium-term</td>
+        <td>Breakouts and squeezes</td>
+      </tr>
+      <tr>
+        <td><strong>VWAP</strong></td>
+        <td>Volume</td>
+        <td>Volume-based</td>
+        <td>Intraday</td>
+        <td>Intraday benchmark</td>
+      </tr>
+      <tr>
+        <td><strong>Ichimoku</strong></td>
+        <td>Trend</td>
+        <td>Cloud</td>
+        <td>Medium-Long term</td>
+        <td>Trend confirmation</td>
+      </tr>
+      <tr>
+        <td><strong>EMA</strong></td>
+        <td>Trend</td>
+        <td>Moving Average</td>
+        <td>All timeframes</td>
+        <td>Trend following</td>
+      </tr>
+      <tr>
+        <td><strong>ATR</strong></td>
+        <td>Volatility</td>
+        <td>Range</td>
+        <td>All timeframes</td>
+        <td>Risk management</td>
+      </tr>
+      <tr>
+        <td><strong>Stochastic</strong></td>
+        <td>Momentum</td>
+        <td>Oscillator</td>
+        <td>Short-term</td>
+        <td>Momentum changes</td>
+      </tr>
+      <tr>
+        <td><strong>OBV</strong></td>
+        <td>Volume</td>
+        <td>Cumulative</td>
+        <td>Medium-term</td>
+        <td>Trend confirmation</td>
+      </tr>
+      <tr>
+        <td><strong>CCI</strong></td>
+        <td>Momentum</td>
+        <td>Oscillator</td>
+        <td>Short-Medium term</td>
+        <td>Cycle analysis</td>
+      </tr>
+    </table>
+
+    <!-- Trading Tips -->
+    <h2 style="margin-top: 50px;">Pro Trading Tips</h2>
+    <div class="tips-container">
+      <div class="tip-item">
+        <h4>Combine Multiple Indicators</h4>
+        <p>Don't rely on a single indicator. Use trend indicators (MACD, EMA) with momentum indicators (RSI) for confirmation and better entry points.</p>
+      </div>
+      <div class="tip-item">
+        <h4>RSI Divergence Strategy</h4>
+        <p>Watch for divergence between RSI and price. If price makes a new high but RSI doesn't, it signals potential reversal.</p>
+      </div>
+      <div class="tip-item">
+        <h4>Bollinger Band Squeeze</h4>
+        <p>When bands narrow significantly, it indicates low volatility and often precedes a major price move (breakout).</p>
+      </div>
+      <div class="tip-item">
+        <h4>MACD Signal Line Crossover</h4>
+        <p>Bullish signal: MACD line crosses above signal line. Bearish signal: MACD line crosses below signal line.</p>
+      </div>
+      <div class="tip-item">
+        <h4>Choose The Right Timeframe</h4>
+        <p>Day traders: 5-15 min charts. Swing traders: 1-4 hour charts. Position traders: Daily/Weekly charts.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="footer">
+    &copy; 2025 StockUp. All rights reserved.
+  </div>
+
+  <script src="https://s3.tradingview.com/tv.js"></script>
+  <script>
+    // Search functionality
+    const searchInput = document.getElementById("search-symbol");
+    if (searchInput) {
+      searchInput.addEventListener("keypress", function(event) {
+        if (event.key === "Enter") {
+          const symbol = this.value.trim();
+          if (symbol) {
+            window.location.href = `analysis.html?symbol=${encodeURIComponent(symbol)}`;
+          }
+        }
+      });
+    }
+
+    // Toggle chart visibility
+    function toggleChart(card, indicator) {
+      const container = card.querySelector('.chart-container');
+      if (container.style.display === "block") {
+        container.style.display = "none";
+        container.innerHTML = "";
+      } else {
+        container.style.display = "block";
+        if (!container.dataset.loaded) {
+          new TradingView.widget({
+            container_id: container.id,
+            autosize: true,
+            symbol: "NASDAQ:AAPL",
+            interval: "D",
+            theme: "dark",
+            style: "1",
+            hide_top_toolbar: true,
+            hide_legend: true
+          });
+          container.dataset.loaded = true;
+        }
+      }
+    }
+
+    // Category filter
+    function filterCategory(category) {
+      const cards = document.querySelectorAll('.card');
+      const tabs = document.querySelectorAll('.tab');
+     
+      // Update active tab
+      tabs.forEach(tab => tab.classList.remove('active'));
+      event.target.classList.add('active');
+     
+      // Filter cards
+      cards.forEach(card => {
+        if (category === 'all' || card.dataset.category === category) {
+          card.style.display = 'block';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    }
+
+    // RSI Calculator
+    function calculateRSI() {
+      const avgGain = parseFloat(document.getElementById('avg-gain').value);
+      const avgLoss = parseFloat(document.getElementById('avg-loss').value);
+     
+      if (isNaN(avgGain) || isNaN(avgLoss) || avgLoss === 0) {
+        document.getElementById('rsi-result').textContent = 'Invalid Input';
+        return;
+      }
+     
+      const rs = avgGain / avgLoss;
+      const rsi = 100 - (100 / (1 + rs));
+     
+      document.getElementById('rsi-result').textContent = rsi.toFixed(2);
+     
+      let interpretation = '';
+      if (rsi >= 70) {
+        interpretation = 'Overbought - Potential sell signal';
+      } else if (rsi <= 30) {
+        interpretation = 'Oversold - Potential buy signal';
+      } else {
+        interpretation = 'Neutral - No strong signal';
+      }
+     
+      document.getElementById('rsi-interpretation').textContent = interpretation;
+    }
+
+    // Moving Average Calculator
+    function calculateMA() {
+      const priceDataStr = document.getElementById('price-data').value;
+      const period = parseInt(document.getElementById('ma-period').value);
+      const maType = document.getElementById('ma-type').value;
+     
+      const prices = priceDataStr.split(',').map(p => parseFloat(p.trim())).filter(p => !isNaN(p));
+     
+      if (prices.length < period) {
+        document.getElementById('ma-result').textContent = 'Not Enough Data';
+        document.getElementById('ma-details').textContent = `Need at least ${period} price points`;
+        return;
+      }
+     
+      let result;
+      if (maType === 'SMA') {
+        // Simple Moving Average
+        const sum = prices.slice(-period).reduce((a, b) => a + b, 0);
+        result = sum / period;
+      } else {
+        // Exponential Moving Average
+        const multiplier = 2 / (period + 1);
+        result = prices[0];
+        for (let i = 1; i < prices.length; i++) {
+          result = (prices[i] * multiplier) + (result * (1 - multiplier));
+        }
+      }
+     
+      document.getElementById('ma-result').textContent = '$' + result.toFixed(2);
+      document.getElementById('ma-details').textContent = `Based on ${prices.length} price points | Period: ${period} | Type: ${maType}`;
+    }
+  </script>
+</body>
+</html>
+
+

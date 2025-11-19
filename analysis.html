@@ -1,0 +1,228 @@
+Conversation opened. 1 unread message.
+
+Skip to content
+Using Gmail with screen readers
+
+1 of 89
+comp project
+Inbox
+
+SHIVADEV
+Attachments
+Oct 23, 2025, 10:27 PM (11 hours ago)
+to me, 10agroup2
+
+
+ 3 Attachments
+  •  Scanned by Gmail
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>StockUp - Analysis</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { 
+      font-family: 'Poppins', sans-serif; 
+      background: radial-gradient(circle at 20% 20%, #0f172a, #0b1120); 
+      color: #CBD5E1; 
+      font-size: 0.9rem;
+    }
+
+    header {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      background: rgba(15, 23, 42, 0.8);
+      backdrop-filter: blur(12px);
+      padding: 10px 10%;
+      height: 60px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      z-index: 1000;
+    }
+
+    header h1 {
+      font-size: 1.2rem;
+      color: #93c5fd;
+      margin-right: 20px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    nav a {
+      text-decoration: none;
+      color: #bcd1ff;
+      font-weight: 500;
+      font-size: 0.9rem;
+      transition: color 0.3s, text-shadow 0.3s;
+    }
+
+    nav a:hover {
+      color: #60a5fa;
+      text-shadow: 0 0 8px rgba(96, 165, 250, 0.6);
+    }
+
+    .header-search {
+      position: relative;
+      display: flex;
+      align-items: center;
+      margin-left: 15px;
+    }
+
+    .header-search input {
+      padding: 6px 30px 6px 12px;
+      border: none;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      background-color: #1E293B;
+      color: #CBD5E1;
+      width: 150px;
+      transition: width 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+    }
+
+    .header-search input:focus {
+      width: 220px;
+      outline: none;
+      background-color: #273449;
+      box-shadow: 0 0 10px rgba(96, 165, 250, 0.4);
+    }
+
+    .header-search::after {
+      content: "🔍";
+      position: absolute;
+      right: 10px;
+      font-size: 0.9rem;
+      color: #94a3b8;
+      pointer-events: none;
+    }
+
+    section { padding: 70px 10% 60px; }
+
+    h2 { 
+      font-size: 1.5rem; 
+      margin-bottom: 15px; 
+      background: linear-gradient(90deg, #60a5fa, #818cf8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-weight: 600;
+    }
+
+    .analysis-container {
+      background: linear-gradient(145deg, #1E293B, #0f172a);
+      border-radius: 15px;
+      padding: 20px;
+      margin-top: 20px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    .analysis-container h3 {
+      margin-bottom: 10px;
+      color: #60a5fa;
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .analysis-container p {
+      font-size: 0.85rem;
+      line-height: 1.5;
+    }
+
+    .chart-box {
+      margin-top: 20px;
+      height: 600px; /* Increased height */
+      border-radius: 12px;
+      overflow: hidden;
+      background: #1E293B;
+    }
+
+    .footer {
+      background-color: rgba(15, 23, 42, 0.9);
+      text-align: center;
+      padding: 18px;
+      font-size: 0.8rem;
+      color: #b2c1f4;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    @media (max-width: 768px) {
+      .chart-box { height: 400px; } /* Mobile-friendly */
+      header { flex-direction: column; align-items: flex-start; height: auto; padding: 10px; }
+      nav { margin-top: 8px; }
+      nav a { margin: 8px 8px 0 0; font-size: 0.85rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>StockUp</h1>
+    <nav>
+      <a href="index.html">Home</a>
+      <a href="indicators.html">Indicators</a>
+      <a href="analysis.html">Analysis</a>
+      <div class="header-search">
+        <input type="text" id="search-symbol" placeholder="Search...">
+      </div>
+    </nav>
+  </header>
+
+  <section>
+    <h2>Stock Analysis</h2>
+    <div class="analysis-container">
+      <h3>Analysis Overview</h3>
+      <p>
+        View key technical insights with preloaded indicators: MACD, RSI, and Bollinger Bands. 
+        Enter a stock symbol in the search bar to update the analysis.
+      </p>
+
+      <div class="chart-box" id="analysis-chart"></div>
+    </div>
+  </section>
+
+  <div class="footer">
+    &copy; 2025 StockUp. All rights reserved.
+  </div>
+
+  <script src="https://s3.tradingview.com/tv.js"></script>
+  <script>
+    const searchInput = document.getElementById("search-symbol");
+    if (searchInput) {
+      searchInput.addEventListener("keypress", function(event) {
+        if (event.key === "Enter") {
+          const symbol = this.value.trim();
+          if (symbol) {
+            window.location.href = `analysis.html?symbol=${encodeURIComponent(symbol)}`;
+          }
+        }
+      });
+    }
+
+    // Default chart with indicators
+    new TradingView.widget({
+      container_id: "analysis-chart",
+      autosize: true,
+      symbol: "NASDAQ:AAPL",
+      interval: "D",
+      theme: "dark",
+      style: "1",
+      hide_top_toolbar: false,
+      hide_legend: false,
+      studies: ["MACD@tv-basicstudies", "RSI@tv-basicstudies", "BB@tv-basicstudies"]
+    });
+  </script>
+</body>
+</html>
+analysis.html
+Displaying analysis.html.
